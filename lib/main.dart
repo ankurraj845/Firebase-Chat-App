@@ -1,44 +1,50 @@
 import 'package:chat_app/screens/auth_screen.dart';
 import 'package:chat_app/screens/chat_screen.dart';
+import 'package:chat_app/widgets/auth/auth_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key}) : super();
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FlutterChat',
-      theme: ThemeData(
-
-        primarySwatch: Colors.green,
-        backgroundColor: Colors.green,
-        accentColor: Colors.lightBlue,
-        accentColorBrightness: Brightness.dark,
-        buttonTheme: ButtonTheme.of(context).copyWith(
-          buttonColor: Colors.green,
-          textTheme: ButtonTextTheme.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
-        )
-      ),
-      home: AuthScreen(),
-    );
+        title: 'FlutterChat',
+        theme: ThemeData(
+            primarySwatch: Colors.green,
+            backgroundColor: Colors.green,
+            accentColor: Colors.lightBlue,
+            accentColorBrightness: Brightness.dark,
+            buttonTheme: ButtonTheme.of(context).copyWith(
+                buttonColor: Colors.green,
+                textTheme: ButtonTextTheme.primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)))),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, userSnapshot) {
+            if( userSnapshot.hasData ) {
+              return ChatScreen();
+            }
+            else{return Day24Authentication();}
+          },
+        ));
   }
 }
 
+
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key,  this.title}) : super(key: key);
-
-
+  const MyHomePage({Key, required this.title}) : super();
 
   final String title;
 
@@ -112,3 +118,5 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+

@@ -1,113 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-class AuthForm extends StatefulWidget {
-  // const AuthForm({Key key}) : super(key: key);
-   AuthForm(this.submitFn);
+import '../../screens/auth_screen.dart';
 
-  final void Function(
-      String email,
-      String password,
-      String username,
-      bool isLogin,
-      BuildContext ctx,
-      ) submitFn;
+
+class Day24Authentication extends StatefulWidget {
+  const Day24Authentication({Key? key}) : super(key: key);
 
   @override
-  _AuthFormState createState() => _AuthFormState();
+  _Day24AuthenticationState createState() => _Day24AuthenticationState();
 }
 
-class _AuthFormState extends State<AuthForm> {
-  final _formKey = GlobalKey<FormState>();
-  var _isLogin = true;
-  var _userEmail = '';
-  var _userName = '';
-  var _userPassword = '';
-
-  void _trySubmit() {
-    final isValid = _formKey.currentState?.validate();
-    FocusScope.of(context).unfocus();
-
-    if (isValid) {
-      _formKey.currentState?.save();
-     widget.submitFn(
-       _userEmail.trim(),
-       _userPassword.trim(),
-       _userName.trim(),
-       _isLogin,
-       context
-     );
-    }
-  }
-
+class _Day24AuthenticationState extends State<Day24Authentication> {
+  final _formkey = GlobalKey<FormState>();
+  bool isLogin = false;
+  String email = '';
+  String password = '';
+  String username = '';
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Card(
-        margin: EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Form(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  TextFormField(
-                    key: ValueKey('email'),
-                    validator: (value) {
-                      if (value.isEmpty || value.contains('@')) {
-                        return 'Please enter  a valid email address ';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email Address',
-                    ),
-                    onSaved: (value) {
-                      _userEmail = value;
-                    },
-                  ),
-                  TextFormField(
-                    key: ValueKey('username'),
-                    decoration: InputDecoration(labelText: 'Username'),
-                    onSaved: (value) {
-                      _userName = value;
-                    },
-                  ),
-                  if (!_isLogin)
-                    TextFormField(
-                      key: ValueKey('password'),
-                      validator: (value) {
-                        if (value.isEmpty || value.length < 4) {
-                          return 'Please enter password at least 4 characters long';
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(labelText: 'Password'),
-                      obscureText: true,
-                      onSaved: (value) {
-                        _userPassword = value;
-                      },
-                    ),
-                  SizedBox(height: 12),
-                  RaisedButton(
-                    child: Text(_isLogin ? 'Login' : 'Signup'),
-                    onPressed: _trySubmit,
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(_isLogin
-                        ? 'Create new account'
-                        : 'I already have an account'),
-                    onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
-                  )
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat app'),
+      ),
+      body: Form(
+        key: _formkey,
+        child: Container(
+          margin: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              !isLogin
+                  ? TextFormField(
+                key: ValueKey('username'),
+                decoration: InputDecoration(hintText: "Enter Username"),
+                validator: (value) {
+                  if (value.toString().length < 3) {
+                    return 'Username is so small';
+                  } else {
+                    return null;
+                  }
+                },
+                onSaved: (value) {
+                  setState(() {
+                    username = value!;
+                  });
+                },
+              )
+                  : Container(),
+              TextFormField(
+                key: ValueKey('email'),
+                decoration: InputDecoration(hintText: "Enter Email"),
+                validator: (value) {
+                  if (!(value.toString().contains('@'))) {
+                    return 'Invalid Email';
+                  } else {
+                    return null;
+                  }
+                },
+                onSaved: (value) {
+                  setState(() {
+                    email = value!;
+                  });
+                },
               ),
-            ),
+              TextFormField(
+                obscureText: true,
+                key: ValueKey('password'),
+                decoration: InputDecoration(hintText: "Enter Password"),
+                validator: (value) {
+                  if (value.toString().length < 6) {
+                    return 'Password is so small';
+                  } else {
+                    return null;
+                  }
+                },
+                onSaved: (value) {
+                  setState(() {
+                    password = value!;
+                  });
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (_formkey.currentState!.validate()) {
+                          _formkey.currentState!.save();
+                          isLogin
+                              ? signin(email, password)
+                              : signup(email, password);
+                        }
+                      },
+                      child: isLogin ? Text('Login') : Text('Signup'))),
+              SizedBox(
+                height: 10,
+              ),
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isLogin = !isLogin;
+                    });
+                  },
+                  child: isLogin
+                      ? Text("Don't have an account? Signup")
+                      : Text('Already Signed Up? Login'))
+            ],
           ),
         ),
       ),

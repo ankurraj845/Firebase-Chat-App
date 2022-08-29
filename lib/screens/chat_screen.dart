@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({Key key}) : super(key: key);
+  const ChatScreen() : super();
 
   @override
   Widget build(BuildContext context) {
@@ -11,9 +11,10 @@ class ChatScreen extends StatelessWidget {
       body : StreamBuilder<dynamic>(stream: FirebaseFirestore.instance.collection('chats/nXscQQXDr5n02CEpp3iI/messages')
           .snapshots() ,
           builder: (ctx, streamSnapshot) {
-        if (streamSnapshot.connectionState == ConnectionState.waiting ){
+            if(streamSnapshot.data == null ) return CircularProgressIndicator();
+        if (streamSnapshot.connectionState == ConnectionState.waiting  ){
           return Center(
-          child: CircularProgressIndicator(),
+          child: ChatScreen(),
           );
         }
         final documents = streamSnapshot.data.docs;
