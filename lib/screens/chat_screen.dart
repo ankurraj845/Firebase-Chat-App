@@ -11,6 +11,7 @@ class ChatScreen extends StatelessWidget {
       body : StreamBuilder<dynamic>(stream: FirebaseFirestore.instance.collection('chats/nXscQQXDr5n02CEpp3iI/messages')
           .snapshots() ,
           builder: (ctx, streamSnapshot) {
+        // issue is somewhere here
             if(streamSnapshot.data == null ) return CircularProgressIndicator();
         if (streamSnapshot.connectionState == ConnectionState.waiting  ){
           return Center(
