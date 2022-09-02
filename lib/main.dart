@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             if( userSnapshot.hasData ) {
               return ChatScreen();
             }
-            else{return Day24Authentication();}
+            return Day24Authentication();
           },
         ));
   }
